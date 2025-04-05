@@ -13,17 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // List filenames in your homepagePhotos folder EXACTLY.
     // Make sure these files exist in the /homepagePhotos/ directory.
-    const homepagePhotoFiles = [
-        'image1.jpg',
-        'image2.jpg',
-        'image3.jpg',
-        'image4.jpg',
-        'image5.jpg',
-        'image6.jpg',
-        // Add more homepage photo filenames here, e.g.:
-        // 'landscape.jpeg',
-        // 'portrait_shot.png'
-    ];
+    const homepagePhotoFiles = generatePhotoList('home', 1, 9, 5, '.jpg');
     const homepagePhotoBasePath = 'homepagePhotos/'; // Path relative to HTML files
 
     // Define your albums here.
@@ -33,17 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
     //   - photos: An array of EXACT filenames within that album's folder (e.g., /albums/urban_landscapes/photo1.jpg).
     //             DO NOT include 'thumb.jpg' in this 'photos' array.
     const albumsData = {
-        'melbourne': { // Corresponds to /albums/album_name_1/
-            title: "Melbourne: Late Summer in March 2025",
-            photos: [
-                'image1.jpg',
-                'image2.jpg',
-                'image3.jpg'
-                // Add all photos for this album
-            ]
+        'melbourne': {
+            title: "Melbourne Late Summer\nMarch 2025",
+            photos: generatePhotoList('melbourne2023', 1, 10, 2, '.jpg').concat([
+            ])
         },
-        'utah': { // Corresponds to /albums/album_name_2/
-            title: "Utah: Winter Roadtrip 2024",
+        'utah': {
+            title: "Utah Road Trip\nDecember 2024",
             photos: [
                 'image4.jpg',
                 'image5.jpg',
@@ -51,9 +37,26 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
 
-        'croatia2023': { // Corresponds to /albums/croatia2023/
-            title: "Dream of Ariatic: Croatia 2023",
-            // Combine generated list with a manual list for unique names
+        'doorscdmx': {
+            title: "Doors and Windows of Mexico City\nDecember 2023",
+            photos: generatePhotoList('doorsCDMX', 1, 13, 2, '.jpg').concat([
+            ])
+        },
+
+        'cdmx': {
+            title: "CDMX\nDecember 2023",
+            photos: generatePhotoList('cdmx', 1, 15, 2, '.jpg').concat([
+            ])
+        },
+
+        'turkey2023': {
+            title: "From the Aegean to the Black Sea\nOctober 2023 in Turkey",
+            photos: generatePhotoList('turkey2023', 1, 20, 2, '.jpg').concat([
+            ])
+        },
+
+        'croatia2023': {
+            title: "Dream of Ariatic\nApril 2023 in Croatia",
             photos: generatePhotoList('croatia', 1, 37, 5, '.jpg').concat([
                 // Add any additional unique filenames for this album here, e.g.:
                 // 'special_view.jpg',

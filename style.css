@@ -160,6 +160,11 @@ main {
     color: #352f36;
 }
 
+/* Style for album titles to respect newlines */
+.album-link p {
+    white-space: pre-line;
+}
+
 /* --- Information Page Specific Styles --- */
 .info-content {
     max-width: 800px; /* Comfortable reading width */
@@ -227,7 +232,7 @@ main {
 .inspector-back-button {
     position: absolute;
     top: 10px; /* Position below the main header */
-    left: 5%;
+    left: 10%;
     background: none;
     border: none;
     font-family: 'Roboto', sans-serif;
@@ -283,6 +288,15 @@ main {
     color: #000;
 }
 
+/* Footer Styles */
+footer {
+    text-align: center;
+    padding: 20px 5%;
+    margin-top: 40px;
+    font-size: 0.7em;
+    color: #777;
+}
+
 /* Simple fade-in for inspector */
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -291,5 +305,5 @@ main {
 
 .photo-inspector-overlay.visible {
   display: flex;
-  animation: fadeIn 0.4s ease-out;
+  animation: fadeIn 0.3s ease-in-out;
 }
