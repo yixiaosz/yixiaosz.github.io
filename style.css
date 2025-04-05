@@ -203,7 +203,7 @@ main {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(245, 245, 245, 0.95); /* Slightly transparent background */
+    background-color: rgba(245, 245, 245, 0.98); /* Slightly transparent background */
     z-index: 1000;
     display: none; /* Hidden by default */
     flex-direction: column;
@@ -291,5 +291,5 @@ main {
 
 .photo-inspector-overlay.visible {
   display: flex;
-  animation: fadeIn 0.3s ease-in-out;
+  animation: fadeIn 0.4s ease-out;
 }

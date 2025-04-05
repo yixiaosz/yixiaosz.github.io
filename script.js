@@ -1,4 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Helper Function for Generating Photo Lists ---
+    function generatePhotoList(baseName, startNum, endNum, digits, extension) {
+        const photos = [];
+        for (let i = startNum; i <= endNum; i++) {
+            const numStr = i.toString().padStart(digits, '0');
+            photos.push(`${baseName}${numStr}${extension}`);
+        }
+        return photos;
+    }
+
     // --- Configuration ---
 
     // List filenames in your homepagePhotos folder EXACTLY.
@@ -41,58 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
 
-        'croatia2023': { // Corresponds to /albums/album_name_2/
+        'croatia2023': { // Corresponds to /albums/croatia2023/
             title: "Dream of Ariatic: Croatia 2023",
-            photos: [
-                'croatia00001.jpg',
-                'croatia00002.jpg',
-                'croatia00003.jpg',
-                'croatia00004.jpg',
-                'croatia00005.jpg',
-                'croatia00006.jpg',
-                'croatia00007.jpg',
-                'croatia00008.jpg',
-                'croatia00009.jpg',
-                'croatia00010.jpg',
-                'croatia00011.jpg',
-                'croatia00012.jpg',
-                'croatia00013.jpg',
-                'croatia00014.jpg',
-                'croatia00015.jpg',
-                'croatia00016.jpg',
-                'croatia00017.jpg',
-                'croatia00018.jpg',
-                'croatia00019.jpg',
-                'croatia00020.jpg',
-                'croatia00021.jpg',
-                'croatia00022.jpg',
-                'croatia00023.jpg',
-                'croatia00024.jpg',
-                'croatia00025.jpg',
-                'croatia00026.jpg',
-                'croatia00027.jpg',
-                'croatia00028.jpg',
-                'croatia00029.jpg',
-                'croatia00030.jpg',
-                'croatia00031.jpg',
-                'croatia00032.jpg',
-                'croatia00033.jpg',
-                'croatia00034.jpg',
-                'croatia00035.jpg',
-                'croatia00036.jpg',
-                'croatia00037.jpg',
-            ]
+            // Combine generated list with a manual list for unique names
+            photos: generatePhotoList('croatia', 1, 37, 5, '.jpg').concat([
+                // Add any additional unique filenames for this album here, e.g.:
+                // 'special_view.jpg',
+                // 'different_angle.png'
+            ])
         },
 
-        // Add more albums following the same structure:
-        // 'portraits': {
-        //     title: "Portraits",
-        //     photos: ['person1.jpg', 'person2.jpg', 'person3.tiff']
-        // },
-        // 'travel_europe': {
-        //     title: "European Travels",
-        //     photos: ['paris.jpg', 'rome.jpg', 'berlin.png']
-        // }
     };
     const albumsBasePath = 'albums/'; // Path relative to HTML files
 
