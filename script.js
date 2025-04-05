@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     //             DO NOT include 'thumb.jpg' in this 'photos' array.
     const albumsData = {
         'melbourne': { // Corresponds to /albums/album_name_1/
-            title: "Melbourne 2025",
+            title: "Melbourne: Late Summer in March 2025",
             photos: [
                 'image1.jpg',
                 'image2.jpg',
@@ -33,11 +33,54 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
         'utah': { // Corresponds to /albums/album_name_2/
-            title: "Utah 2024",
+            title: "Utah: Winter Roadtrip 2024",
             photos: [
                 'image4.jpg',
                 'image5.jpg',
                 'image6.jpg'
+            ]
+        },
+
+        'croatia2023': { // Corresponds to /albums/album_name_2/
+            title: "Dream of Ariatic: Croatia 2023",
+            photos: [
+                'croatia00001.jpg',
+                'croatia00002.jpg',
+                'croatia00003.jpg',
+                'croatia00004.jpg',
+                'croatia00005.jpg',
+                'croatia00006.jpg',
+                'croatia00007.jpg',
+                'croatia00008.jpg',
+                'croatia00009.jpg',
+                'croatia00010.jpg',
+                'croatia00011.jpg',
+                'croatia00012.jpg',
+                'croatia00013.jpg',
+                'croatia00014.jpg',
+                'croatia00015.jpg',
+                'croatia00016.jpg',
+                'croatia00017.jpg',
+                'croatia00018.jpg',
+                'croatia00019.jpg',
+                'croatia00020.jpg',
+                'croatia00021.jpg',
+                'croatia00022.jpg',
+                'croatia00023.jpg',
+                'croatia00024.jpg',
+                'croatia00025.jpg',
+                'croatia00026.jpg',
+                'croatia00027.jpg',
+                'croatia00028.jpg',
+                'croatia00029.jpg',
+                'croatia00030.jpg',
+                'croatia00031.jpg',
+                'croatia00032.jpg',
+                'croatia00033.jpg',
+                'croatia00034.jpg',
+                'croatia00035.jpg',
+                'croatia00036.jpg',
+                'croatia00037.jpg',
             ]
         },
 
