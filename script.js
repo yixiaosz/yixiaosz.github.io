@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         },
 
         'turkey2023': {
-            title: "From the Aegean to the Black Sea\nOctober 2023 in Turkey",
+            title: "From the Aegean to the Black Sea\nSummer 2023 in Turkey",
             photos: generatePhotoList('turkey2023', 1, 20, 2, '.jpg').concat([
             ])
         },
