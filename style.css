@@ -297,6 +297,11 @@ footer {
     color: #777;
 }
 
+footer p {
+    font-size: 0.9em;
+    color: #777;
+}
+
 /* Simple fade-in for inspector */
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -306,4 +311,98 @@ footer {
 .photo-inspector-overlay.visible {
   display: flex;
   animation: fadeIn 0.3s ease-in-out;
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+    body {
+        padding-top: 60px; /* Adjust for potentially smaller fixed header */
+    }
+
+    header {
+        height: auto; /* Allow header to grow if content wraps */
+        min-height: 60px; /* Ensure minimum height */
+        padding: 0 5%; /* Reduce side padding */
+    }
+
+    .header-content {
+        flex-direction: column; /* Stack title and nav vertically */
+        align-items: flex-start; /* Align items to the start */
+        gap: 5px; /* Reduce gap between title and nav */
+        padding: 10px 0 5px 0; /* Adjust vertical padding */
+        height: auto; /* Allow content to determine height */
+    }
+
+    header .site-title {
+        font-size: 1.2em; /* Slightly smaller title */
+        margin-bottom: 5px; /* Add space below title when stacked */
+    }
+
+    header nav ul {
+        padding-left: 0; /* Remove default padding if any */
+        margin-top: 5px; /* Add some space above nav when stacked */
+        flex-wrap: wrap; /* Allow nav items to wrap */
+        gap: 10px; /* Adjust gap between nav items */
+    }
+
+    header nav li {
+        margin-left: 0; /* Remove left margin */
+        margin-right: 15px; /* Add right margin for spacing */
+    }
+
+    header nav a {
+        font-size: 1em; /* Slightly smaller nav links */
+    }
+
+    main {
+        padding: 20px 5%; /* Adjust main content padding */
+    }
+
+    .album-gallery {
+        gap: 30px; /* Reduce gap in album grid */
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjust min size */
+    }
+
+    .photo-inspector-overlay {
+        padding-top: 70px; /* Adjust padding if header height changes */
+    }
+
+    .inspector-back-button {
+        left: 5%; /* Adjust back button position */
+        top: 5px; /* Adjust top position */
+    }
+
+    .inspector-navigation button {
+        font-size: 1.5em; /* Adjust inspector nav button size */
+    }
+
+    .home-photo-container img {
+        max-height: 65vh; /* Adjust max height for smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    header .site-title {
+        font-size: 1.1em; /* Even smaller title on very small screens */
+    }
+
+    header nav a {
+        font-size: 0.9em; /* Smaller nav links */
+    }
+
+    .album-gallery {
+        gap: 20px; /* Further reduce gap */
+    }
+
+     .photo-navigation button {
+        font-size: 0.9em; /* Smaller homepage nav buttons */
+    }
+
+    .info-content h1 {
+        font-size: 1.5em;
+    }
+
+    .info-content p {
+        font-size: 1em;
+    }
 }
