@@ -45,13 +45,12 @@ Adding homepage photos:
 2. Update `homepagePhotoFiles` in `script.js` (usually just the
    `generatePhotoList` range).
 
-## Planned Work (pending, from GEMINI-activeContext.md)
+## Planned Work
 
-1. **Reduce code redundancy in `script.js`**
-   - Consolidate overlapping logic between homepage photo loading, album
-     gallery, and photo inspector (index wrapping / photo-list navigation is
-     duplicated).
-   - Remove unused code (e.g. commented-out homepage click-to-inspector block).
+1. ~~**Reduce code redundancy in `script.js`**~~ **(done)**
+   - Consolidated with a shared `wrapIndex()` helper and a single
+     `stepInspectorImage(delta)`; removed dead code and the unused
+     `currentAlbumContext` state.
 2. **Modern image formats with graceful fallback**
 
    Format priority guideline (apply everywhere images are served):

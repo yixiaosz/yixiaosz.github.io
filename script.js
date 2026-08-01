@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Helper Function for Generating Photo Lists ---
+    // --- Helper Functions ---
     function generatePhotoList(baseName, startNum, endNum, digits, extension) {
         const photos = [];
         for (let i = startNum; i <= endNum; i++) {
@@ -7,6 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
             photos.push(`${baseName}${numStr}${extension}`);
         }
         return photos;
+    }
+
+    // Wrap an index into [0, length), handling negatives for backwards navigation.
+    function wrapIndex(index, length) {
+        return (index % length + length) % length;
     }
 
     // --- Configuration ---
@@ -70,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Global Variables & DOM Elements ---
     let currentPhotoList = []; // Holds the list of photo URLs currently being viewed (homepage or album)
     let currentPhotoIndex = 0;
-    let currentAlbumContext = null; // To know which album we are inspecting
 
     // Inspector Elements
     const photoInspector = document.getElementById('photo-inspector');
@@ -88,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const albumGalleryContainer = document.getElementById('album-gallery');
 
     // --- Photo Inspector Logic ---
-    function showInspector(photoList, startIndex, albumContext = null) {
+    function showInspector(photoList, startIndex) {
         if (!photoInspector || !inspectorImage || !photoList || photoList.length === 0) {
             console.error("Inspector elements or photo list missing.");
             return;
@@ -96,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentPhotoList = photoList;
         currentPhotoIndex = startIndex;
-        currentAlbumContext = albumContext; // Store album context if provided
         updateInspectorImage();
         photoInspector.classList.add('visible'); // Use class to show with transition
         document.body.style.overflow = 'hidden'; // Prevent scrolling background
@@ -112,14 +115,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.removeEventListener('keydown', handleInspectorKeys);
         currentPhotoList = []; // Clear the list
         currentPhotoIndex = 0;
-        currentAlbumContext = null;
     }
 
     function updateInspectorImage() {
         if (!inspectorImage || currentPhotoList.length === 0) return;
 
         // Ensure index is within bounds (useful for initial load or edge cases)
-        currentPhotoIndex = (currentPhotoIndex + currentPhotoList.length) % currentPhotoList.length;
+        currentPhotoIndex = wrapIndex(currentPhotoIndex, currentPhotoList.length);
 
         const imageUrl = currentPhotoList[currentPhotoIndex];
         inspectorImage.src = imageUrl;
@@ -131,15 +133,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    function showNextInspectorImage() {
+    function stepInspectorImage(delta) {
         if (currentPhotoList.length === 0) return;
-        currentPhotoIndex = (currentPhotoIndex + 1) % currentPhotoList.length;
-        updateInspectorImage();
-    }
-
-    function showPrevInspectorImage() {
-        if (currentPhotoList.length === 0) return;
-        currentPhotoIndex = (currentPhotoIndex - 1 + currentPhotoList.length) % currentPhotoList.length;
+        currentPhotoIndex = wrapIndex(currentPhotoIndex + delta, currentPhotoList.length);
         updateInspectorImage();
     }
 
@@ -148,9 +144,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!photoInspector.classList.contains('visible')) return; // Only act if inspector is visible
 
         if (event.key === 'ArrowRight') {
-            showNextInspectorImage();
+            stepInspectorImage(1);
         } else if (event.key === 'ArrowLeft') {
-            showPrevInspectorImage();
+            stepInspectorImage(-1);
         } else if (event.key === 'Escape') {
             hideInspector();
         }
@@ -160,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function loadHomepagePhoto(index) {
         if (!homepagePhotoElement || homepagePhotoFiles.length === 0) return;
         // Ensure index is valid
-        currentPhotoIndex = (index + homepagePhotoFiles.length) % homepagePhotoFiles.length;
+        currentPhotoIndex = wrapIndex(index, homepagePhotoFiles.length);
         const photoPath = homepagePhotoBasePath + homepagePhotoFiles[currentPhotoIndex];
         homepagePhotoElement.src = photoPath;
         homepagePhotoElement.alt = `Homepage Photograph ${currentPhotoIndex + 1}`;
@@ -168,7 +164,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function setupHomepage() {
         if (!homepagePhotoElement || !homepagePrevBtn || !homepageNextBtn || homepagePhotoFiles.length === 0) {
-            // console.log("Homepage elements not found or no photos configured.");
             return; // Exit if not on homepage or no photos
         }
 
@@ -184,18 +179,11 @@ document.addEventListener('DOMContentLoaded', () => {
         homepageNextBtn.addEventListener('click', () => {
             loadHomepagePhoto(currentPhotoIndex + 1);
         });
-
-        // Click on homepage photo to open inspector
-        // homepagePhotoElement.addEventListener('click', () => {
-        //     const fullPathList = homepagePhotoFiles.map(file => homepagePhotoBasePath + file);
-        //     showInspector(fullPathList, currentPhotoIndex);
-        // });
     }
 
     // --- Albums Page Logic ---
     function loadAlbumGallery() {
         if (!albumGalleryContainer || Object.keys(albumsData).length === 0) {
-            // console.log("Album gallery container not found or no albums configured.");
             return; // Exit if not on albums page or no albums
         }
 
@@ -221,8 +209,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Add error handling for missing thumbnails
             img.onerror = () => {
                 img.alt = `Thumbnail not found for ${album.title || albumKey}`;
-                // Optionally display a placeholder image or style the container
-                // img.src = 'path/to/placeholder-thumb.jpg';
                 albumItem.style.border = '1px dashed #ccc'; // Example visual cue
             };
 
@@ -244,10 +230,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (albumKey && albumsData[albumKey] && albumsData[albumKey].photos.length > 0) {
                     const albumPath = albumsBasePath + albumKey + '/';
                     const photoPaths = albumsData[albumKey].photos.map(file => albumPath + file);
-                    showInspector(photoPaths, 0, albumKey); // Open inspector with this album's photos
+                    showInspector(photoPaths, 0); // Open inspector with this album's photos
                 } else {
                     console.warn(`Album data or photos not found for key: ${albumKey}`);
-                    // Optionally show a message to the user
                 }
             }
         });
@@ -259,8 +244,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Setup Inspector Buttons (always needed if inspector exists)
     if (photoInspector) {
         inspectorBackBtn.addEventListener('click', hideInspector);
-        inspectorPrevBtn.addEventListener('click', showPrevInspectorImage);
-        inspectorNextBtn.addEventListener('click', showNextInspectorImage);
+        inspectorPrevBtn.addEventListener('click', () => stepInspectorImage(-1));
+        inspectorNextBtn.addEventListener('click', () => stepInspectorImage(1));
         // Close inspector if clicking the background overlay itself
         photoInspector.addEventListener('click', (event) => {
             if (event.target === photoInspector) { // Check if the click is directly on the overlay
