@@ -25,7 +25,11 @@
 
     <main>
         <div class="home-photo-container">
-            <img id="homepage-photo" src="" alt="Featured Photograph">
+            <picture>
+                <source type="image/avif" srcset="">
+                <source type="image/webp" srcset="">
+                <img id="homepage-photo" src="" alt="Featured Photograph" loading="eager">
+            </picture>
             <div class="photo-navigation">
                 <button id="prev-photo">Previous</button>
                 <button id="next-photo">Next</button>
@@ -38,7 +42,11 @@
          <button id="inspector-back" class="inspector-back-button">&lt; Back</button>
          <div class="inspector-content">
             <div class="inspector-image-container">
-                <img id="inspector-image" src="" alt="Inspected Photograph">
+                <picture>
+                    <source type="image/avif" srcset="">
+                    <source type="image/webp" srcset="">
+                    <img id="inspector-image" src="" alt="Inspected Photograph" loading="eager">
+                </picture>
             </div>
             <div class="inspector-navigation">
                 <button id="inspector-prev">Previous</button>
@@ -50,7 +58,7 @@
     <script src="script.js"></script>
 
     <footer>
-        <p>© Yixiao Zhang 2025. All rights reserved.</p>
+        <p>© Yixiao Zhang 2026. All rights reserved.</p>
     </footer>
 </body>
 </html>

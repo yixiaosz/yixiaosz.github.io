@@ -14,6 +14,28 @@ document.addEventListener('DOMContentLoaded', () => {
         return (index % length + length) % length;
     }
 
+    // Derive modern-format variants of a JPEG path (same basename, new extension).
+    function photoVariants(jpgPath) {
+        return {
+            avif: jpgPath.replace(/\.jpg$/i, '.avif'),
+            webp: jpgPath.replace(/\.jpg$/i, '.webp'),
+            jpg: jpgPath
+        };
+    }
+
+    // Point a <picture>-wrapped <img> at a photo: sets AVIF/WebP srcset on the
+    // sibling <source> elements and the JPEG src/alt on the <img> itself.
+    function setPictureSource(imgElement, jpgPath, altText) {
+        const variants = photoVariants(jpgPath);
+        const picture = imgElement.closest('picture');
+        if (picture) {
+            picture.querySelector('source[type="image/avif"]').srcset = variants.avif;
+            picture.querySelector('source[type="image/webp"]').srcset = variants.webp;
+        }
+        imgElement.src = variants.jpg;
+        imgElement.alt = altText;
+    }
+
     // --- Configuration ---
 
     // List filenames in your homepagePhotos folder EXACTLY.
@@ -124,8 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentPhotoIndex = wrapIndex(currentPhotoIndex, currentPhotoList.length);
 
         const imageUrl = currentPhotoList[currentPhotoIndex];
-        inspectorImage.src = imageUrl;
-        inspectorImage.alt = `Photograph ${currentPhotoIndex + 1} of ${currentPhotoList.length}`;
+        setPictureSource(inspectorImage, imageUrl, `Photograph ${currentPhotoIndex + 1} of ${currentPhotoList.length}`);
 
         // Disable/Enable buttons at ends
         inspectorPrevBtn.disabled = currentPhotoList.length <= 1;
@@ -158,8 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Ensure index is valid
         currentPhotoIndex = wrapIndex(index, homepagePhotoFiles.length);
         const photoPath = homepagePhotoBasePath + homepagePhotoFiles[currentPhotoIndex];
-        homepagePhotoElement.src = photoPath;
-        homepagePhotoElement.alt = `Homepage Photograph ${currentPhotoIndex + 1}`;
+        setPictureSource(homepagePhotoElement, photoPath, `Homepage Photograph ${currentPhotoIndex + 1}`);
     }
 
     function setupHomepage() {
@@ -203,8 +223,21 @@ document.addEventListener('DOMContentLoaded', () => {
             albumLink.classList.add('album-link');
             albumLink.dataset.albumKey = albumKey; // Store album key for click handler
 
+            // Build <picture> with AVIF/WebP sources and a JPEG <img> fallback
+            const thumbVariants = photoVariants(thumbPath);
+            const picture = document.createElement('picture');
+
+            const avifSource = document.createElement('source');
+            avifSource.type = 'image/avif';
+            avifSource.srcset = thumbVariants.avif;
+
+            const webpSource = document.createElement('source');
+            webpSource.type = 'image/webp';
+            webpSource.srcset = thumbVariants.webp;
+
             const img = document.createElement('img');
-            img.src = thumbPath;
+            img.src = thumbVariants.jpg;
+            img.loading = 'eager'; // Album covers are eagerly loaded per site guideline
             img.alt = album.title || albumKey; // Use title or key as alt text
             // Add error handling for missing thumbnails
             img.onerror = () => {
@@ -212,10 +245,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 albumItem.style.border = '1px dashed #ccc'; // Example visual cue
             };
 
+            picture.append(avifSource, webpSource, img);
+
             const title = document.createElement('p');
             title.textContent = album.title || albumKey.replace(/_/g, ' '); // Use title or formatted key
 
-            albumLink.appendChild(img);
+            albumLink.appendChild(picture);
             albumLink.appendChild(title);
             albumItem.appendChild(albumLink);
             albumGalleryContainer.appendChild(albumItem);

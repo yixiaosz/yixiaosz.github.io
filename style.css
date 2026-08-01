@@ -31,6 +31,13 @@ img {
     display: block; /* Prevents extra space below images */
 }
 
+/* <picture> is only a format selector, not a visual box: let the <img> inside
+   participate in the parent's flex/block layout directly (prevents stretched
+   images in the inspector and homepage). */
+picture {
+    display: contents;
+}
+
 /* Header Styles */
 header {
     position: fixed;

@@ -32,18 +32,22 @@ This file consolidates the plan and conventions previously recorded in
 - Album `photos` arrays list exact filenames in the album folder and must NOT
   include `thumb.jpg`; prefer `generatePhotoList(...)` (optionally `.concat()`
   extra one-off filenames).
-- All image URLs are injected via JS (plain `<img>` tags today).
+- All image URLs are injected via JS as `<picture>` elements (AVIF/WebP
+  `<source>` + JPEG `<img>` fallback; see `photoVariants()` in `script.js`).
 
 ## Workflows
 
 Adding an album:
 1. Create `albums/<key>/` with `thumb.jpg` plus the album photos.
 2. Register it in `albumsData` in `script.js` (key = folder name).
+3. Add converted `.avif` and `.webp` versions of every image (same basenames),
+   including `thumb`.
 
 Adding homepage photos:
 1. Add images to `homepagePhotos/` following the `homeNNNNN.jpg` convention.
 2. Update `homepagePhotoFiles` in `script.js` (usually just the
    `generatePhotoList` range).
+3. Add converted `.avif` and `.webp` versions alongside the `.jpg` files.
 
 ## Planned Work
 
@@ -51,7 +55,7 @@ Adding homepage photos:
    - Consolidated with a shared `wrapIndex()` helper and a single
      `stepInspectorImage(delta)`; removed dead code and the unused
      `currentAlbumContext` state.
-2. **Modern image formats with graceful fallback**
+2. ~~**Modern image formats with graceful fallback**~~ **(done)**
 
    Format priority guideline (apply everywhere images are served):
    1. Serve **AVIF** to modern browsers for maximum compression and fastest
@@ -61,16 +65,21 @@ Adding homepage photos:
    4. **Lazy-load below-the-fold images; eagerly load hero and cover images**
       (homepage photo, album `thumb.jpg` covers).
 
-   Implementation notes:
-   - Update `script.js` to emit `<picture>` markup with AVIF and WebP
-     `<source>` elements and a JPEG `<img>` fallback, so exactly one format is
-     downloaded per image.
-   - Note: images are injected dynamically, so tag generation in `script.js`
-     must produce the new structure (homepage photo, album thumbs, inspector
-     image), including appropriate `loading="lazy"` / `loading="eager"`
-     attributes.
-   - **Image conversion is handled manually by the site owner, not by AI
-     agents.** Agents should write code referencing the `.avif` / `.webp`
-     filenames at their expected locations (same basename/path as the
-     corresponding `.jpg`) and leave the actual files absent; the owner will
-     batch-convert the existing JPEGs and drop the converted files in place.
+   What was done:
+   - `script.js` emits `<picture>` markup with AVIF and WebP `<source>`
+     elements and a JPEG `<img>` fallback everywhere images are injected
+     (homepage photo, album thumbs, inspector image), so exactly one format is
+     downloaded per image. See `photoVariants()` / `setPictureSource()` in
+     `script.js`; variants are derived by swapping the extension of the `.jpg`
+     path.
+   - Hero, cover, and inspector images carry `loading="eager"`; lazy loading
+     applies to any future below-the-fold images.
+   - `style.css` sets `picture { display: contents; }` so the `<picture>`
+     wrapper stays layout-neutral and the `<img>` inside lays out exactly as
+     before (without it, flex containers stretch the image).
+   - All existing JPEGs have been batch-converted by the owner: every `.jpg`
+     has sibling `.avif` and `.webp` files (verified for all 113 images).
+     **For any future image added to the site, the owner must add converted
+     `.avif`/`.webp` files alongside the `.jpg`** — a missing file shows a
+     broken image in modern browsers, since `<picture>` does not fall back to
+     JPEG on 404.
