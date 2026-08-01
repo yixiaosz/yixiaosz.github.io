@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // List filenames in your homepagePhotos folder EXACTLY.
     // Make sure these files exist in the /homepagePhotos/ directory.
-    const homepagePhotoFiles = generatePhotoList('home', 1, 9, 5, '.jpg');
+    const homepagePhotoFiles = generatePhotoList('home', 1, 13, 5, '.jpg');
     const homepagePhotoBasePath = 'homepagePhotos/'; // Path relative to HTML files
 
     // Define your albums here.
