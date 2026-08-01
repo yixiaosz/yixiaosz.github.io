@@ -50,6 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
     //   - photos: An array of EXACT filenames within that album's folder (e.g., /albums/urban_landscapes/photo1.jpg).
     //             DO NOT include 'thumb.jpg' in this 'photos' array.
     const albumsData = {
+        'colorado2025': {
+            title: "Colorado on Medium Format\nJune 2025",
+            photos: generatePhotoList('colorado2025-', 1, 23, 1, '.jpg')
+        },
         'melbourne': {
             title: "Melbourne Late Summer\nMarch 2025",
             photos: generatePhotoList('melbourne2023', 1, 10, 2, '.jpg').concat([
