@@ -8,46 +8,58 @@ This file consolidates the plan and conventions previously recorded in
 
 ## Project Structure
 
-- `index.html` — landing page; shows a rotating photo from `homepagePhotos/`.
+- `index.html` — landing page; shows a rotating homepage photo.
 - `albums.html` — gallery page listing all albums as thumbnails.
 - `information.html` — about/info page.
 - `script.js` — all site logic, wrapped in a single `DOMContentLoaded` handler:
   - `generatePhotoList(baseName, startNum, endNum, digits, extension)` — builds
-    zero-padded filename arrays, e.g. `generatePhotoList('home', 1, 9, 5, '.jpg')`
-    → `home00001.jpg` … `home00009.jpg`.
-  - `albumsData` — album registry; keys must match folder names in `albums/`.
+    zero-padded filename arrays, e.g. `generatePhotoList('croatia', 1, 37, 5, '.jpg')`
+    → `croatia00001.jpg` … `croatia00037.jpg`.
+  - `albumsMeta` — album display titles and cover images; key order = gallery order.
+  - `photoDB` — the photo database: one entry per photo
+    (`{ file, album, homepage }`), built via `buildEntries(album, files,
+    homepageFiles)`. All pages are filtered views over this array.
   - Photo Inspector overlay logic (`showInspector` / `hideInspector` /
     `updateInspectorImage` and keyboard nav).
   - Page setup: `setupHomepage()` and `loadAlbumGallery()`.
 - `style.css` — all styling; Roboto font, fixed header, responsive layouts.
-- `homepagePhotos/` — homepage images (`homeNNNNN.jpg`).
-- `albums/<albumKey>/` — one folder per album; **must contain `thumb.jpg`**.
+- `photos/` — flat directory holding every image on the site: album photos plus
+  one `<albumKey>-thumb.jpg` cover per album. Basenames must be unique across the
+  whole directory (there are no subfolders to namespace them).
 
 ## Key Conventions
 
 - No per-photo/per-album pages. Full-screen viewing happens in the "Photo
   Inspector" (`#photo-inspector`), a fixed overlay hidden by default, opened
   when an album thumbnail is clicked. Arrow Left/Right navigate, Escape closes.
+- Organization is tag-based, not folder-based: a photo's album membership and
+  homepage presence live only in its `photoDB` entry in `script.js`.
 - Album `title` supports `\n` for line breaks.
-- Album `photos` arrays list exact filenames in the album folder and must NOT
-  include `thumb.jpg`; prefer `generatePhotoList(...)` (optionally `.concat()`
-  extra one-off filenames).
+- `photoDB` `files` arrays list exact filenames in `photos/`; prefer
+  `generatePhotoList(...)` via `buildEntries()` (pass one-off filenames as a
+  plain array, as the `utah` album does).
+- An album's cover is `albumsMeta[key].cover` (the `<albumKey>-thumb.jpg` file),
+  NOT a photo in the album — cover files are unique images and never appear in
+  `photoDB`.
 - All image URLs are injected via JS as `<picture>` elements (AVIF/WebP
   `<source>` + JPEG `<img>` fallback; see `photoVariants()` in `script.js`).
 
 ## Workflows
 
 Adding an album:
-1. Create `albums/<key>/` with `thumb.jpg` plus the album photos.
-2. Register it in `albumsData` in `script.js` (key = folder name).
-3. Add converted `.avif` and `.webp` versions of every image (same basenames),
-   including `thumb`.
+1. Add the album photos and one cover image to `photos/`, using basenames unique
+   across the whole directory; name the cover `<albumKey>-thumb.jpg`.
+2. Add converted `.avif` and `.webp` versions of every image (same basenames),
+   including the cover.
+3. Register the album in `albumsMeta` in `script.js` (title + cover; position in
+   the object sets gallery order) and add its photos to `photoDB` via
+   `buildEntries('<albumKey>', ...)`.
 
 Adding homepage photos:
-1. Add images to `homepagePhotos/` following the `homeNNNNN.jpg` convention.
-2. Update `homepagePhotoFiles` in `script.js` (usually just the
-   `generatePhotoList` range).
-3. Add converted `.avif` and `.webp` versions alongside the `.jpg` files.
+1. Homepage photos are album photos — pick existing `photoDB` entries and list
+   their filenames in that album's `buildEntries(...)` `homepageFiles` argument.
+2. Never copy files for the homepage; the rotation is `photoDB.filter(p =>
+   p.homepage)`.
 
 ## Planned Work
 
@@ -63,7 +75,7 @@ Adding homepage photos:
    2. Fall back to **WebP** for the small slice of older browsers.
    3. Keep **JPEG** as the absolute last resort.
    4. **Lazy-load below-the-fold images; eagerly load hero and cover images**
-      (homepage photo, album `thumb.jpg` covers).
+      (homepage photo, album cover images).
 
    What was done:
    - `script.js` emits `<picture>` markup with AVIF and WebP `<source>`

@@ -38,65 +38,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Configuration ---
 
-    // List filenames in your homepagePhotos folder EXACTLY.
-    // Make sure these files exist in the /homepagePhotos/ directory.
-    const homepagePhotoFiles = generatePhotoList('home', 1, 13, 5, '.jpg');
-    const homepagePhotoBasePath = 'homepagePhotos/'; // Path relative to HTML files
+    // All photos live in the flat /photos/ directory. Organization is tag-based:
+    // each photoDB entry records which album a photo belongs to and whether it
+    // appears in the homepage rotation.
+    const photosBasePath = 'photos/'; // Path relative to HTML files
 
-    // Define your albums here.
-    // The key (e.g., 'urban_landscapes') MUST match the folder name in the /albums/ directory.
-    // Inside each album object:
-    //   - title: The display name for the album on the albums page.
-    //   - photos: An array of EXACT filenames within that album's folder (e.g., /albums/urban_landscapes/photo1.jpg).
-    //             DO NOT include 'thumb.jpg' in this 'photos' array.
-    const albumsData = {
-        'colorado2025': {
-            title: "Colorado on Medium Format\nJune 2025",
-            photos: generatePhotoList('colorado2025-', 1, 23, 1, '.jpg')
-        },
-        'melbourne': {
-            title: "Melbourne Late Summer\nMarch 2025",
-            photos: generatePhotoList('melbourne2023', 1, 10, 2, '.jpg').concat([
-            ])
-        },
-        'utah': {
-            title: "Utah Road Trip\nDecember 2024",
-            photos: [
-                'image4.jpg',
-                'image5.jpg',
-                'image6.jpg'
-            ]
-        },
-
-        'doorscdmx': {
-            title: "Doors and Windows of Mexico City\nDecember 2023",
-            photos: generatePhotoList('doorsCDMX', 1, 13, 2, '.jpg').concat([
-            ])
-        },
-
-        'cdmx': {
-            title: "CDMX\nDecember 2023",
-            photos: generatePhotoList('cdmx', 1, 15, 2, '.jpg').concat([
-            ])
-        },
-
-        'turkey2023': {
-            title: "From the Aegean to the Black Sea\nSummer 2023 in Turkey",
-            photos: generatePhotoList('turkey2023', 1, 20, 2, '.jpg').concat([
-            ])
-        },
-
-        'croatia2023': {
-            title: "Dream of Ariatic\nApril 2023 in Croatia",
-            photos: generatePhotoList('croatia', 1, 37, 5, '.jpg').concat([
-                // Add any additional unique filenames for this album here, e.g.:
-                // 'special_view.jpg',
-                // 'different_angle.png'
-            ])
-        },
-
+    // Album display metadata and cover image. Object key order = gallery order.
+    const albumsMeta = {
+        'colorado2025': { title: "Colorado on Medium Format\nJune 2025", cover: 'colorado2025-thumb.jpg' },
+        'melbourne': { title: "Melbourne Late Summer\nMarch 2025", cover: 'melbourne-thumb.jpg' },
+        'utah': { title: "Utah Road Trip\nDecember 2024", cover: 'utah-thumb.jpg' },
+        'doorscdmx': { title: "Doors and Windows of Mexico City\nDecember 2023", cover: 'doorscdmx-thumb.jpg' },
+        'cdmx': { title: "CDMX\nDecember 2023", cover: 'cdmx-thumb.jpg' },
+        'turkey2023': { title: "From the Aegean to the Black Sea\nSummer 2023 in Turkey", cover: 'turkey2023-thumb.jpg' },
+        'croatia2023': { title: "Dream of Ariatic\nApril 2023 in Croatia", cover: 'croatia2023-thumb.jpg' },
     };
-    const albumsBasePath = 'albums/'; // Path relative to HTML files
+
+    // Build photoDB entries for an album from its exact filenames in /photos/.
+    // Files listed in homepageFiles also appear in the homepage rotation.
+    function buildEntries(album, files, homepageFiles = []) {
+        return files.map(file => ({ file, album, homepage: homepageFiles.includes(file) }));
+    }
+
+    const photoDB = [
+        ...buildEntries('colorado2025', generatePhotoList('colorado2025-', 1, 23, 1, '.jpg'), [
+            'colorado2025-1.jpg', 'colorado2025-9.jpg', 'colorado2025-14.jpg', 'colorado2025-20.jpg'
+        ]),
+        ...buildEntries('melbourne', generatePhotoList('melbourne2023', 1, 10, 2, '.jpg'), [
+            'melbourne202301.jpg', 'melbourne202304.jpg', 'melbourne202305.jpg'
+        ]),
+        ...buildEntries('utah', [
+            'image4.jpg',
+            'image5.jpg',
+            'image6.jpg'
+        ]),
+        ...buildEntries('doorscdmx', generatePhotoList('doorsCDMX', 1, 13, 2, '.jpg'), [
+            'doorsCDMX01.jpg', 'doorsCDMX11.jpg'
+        ]),
+        ...buildEntries('cdmx', generatePhotoList('cdmx', 1, 15, 2, '.jpg')),
+        ...buildEntries('turkey2023', generatePhotoList('turkey2023', 1, 20, 2, '.jpg')),
+        ...buildEntries('croatia2023', generatePhotoList('croatia', 1, 37, 5, '.jpg'), [
+            'croatia00006.jpg', 'croatia00015.jpg', 'croatia00021.jpg', 'croatia00037.jpg'
+        ]),
+    ];
+
+    // Homepage rotation = every photo tagged homepage: true.
+    const homepagePhotoFiles = photoDB.filter(p => p.homepage).map(p => p.file);
+
+    // Album photos in gallery/inspector order.
+    function albumPhotoFiles(albumKey) {
+        return photoDB.filter(p => p.album === albumKey).map(p => p.file);
+    }
 
     // --- Global Variables & DOM Elements ---
     let currentPhotoList = []; // Holds the list of photo URLs currently being viewed (homepage or album)
@@ -182,7 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!homepagePhotoElement || homepagePhotoFiles.length === 0) return;
         // Ensure index is valid
         currentPhotoIndex = wrapIndex(index, homepagePhotoFiles.length);
-        const photoPath = homepagePhotoBasePath + homepagePhotoFiles[currentPhotoIndex];
+        const photoPath = photosBasePath + homepagePhotoFiles[currentPhotoIndex];
         setPictureSource(homepagePhotoElement, photoPath, `Homepage Photograph ${currentPhotoIndex + 1}`);
     }
 
@@ -207,16 +199,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Albums Page Logic ---
     function loadAlbumGallery() {
-        if (!albumGalleryContainer || Object.keys(albumsData).length === 0) {
+        if (!albumGalleryContainer || Object.keys(albumsMeta).length === 0) {
             return; // Exit if not on albums page or no albums
         }
 
         albumGalleryContainer.innerHTML = ''; // Clear existing content
 
-        for (const albumKey in albumsData) {
-            const album = albumsData[albumKey];
-            const albumPath = albumsBasePath + albumKey + '/';
-            const thumbPath = albumPath + 'thumb.jpg'; // Standard thumbnail name
+        for (const albumKey in albumsMeta) {
+            const album = albumsMeta[albumKey];
+            const thumbPath = photosBasePath + album.cover;
 
             const albumItem = document.createElement('div');
             albumItem.classList.add('album-item');
@@ -266,9 +257,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (clickedLink) {
                 event.preventDefault(); // Prevent default anchor behavior
                 const albumKey = clickedLink.dataset.albumKey;
-                if (albumKey && albumsData[albumKey] && albumsData[albumKey].photos.length > 0) {
-                    const albumPath = albumsBasePath + albumKey + '/';
-                    const photoPaths = albumsData[albumKey].photos.map(file => albumPath + file);
+                const albumFiles = albumKey ? albumPhotoFiles(albumKey) : [];
+                if (albumFiles.length > 0) {
+                    const photoPaths = albumFiles.map(file => photosBasePath + file);
                     showInspector(photoPaths, 0); // Open inspector with this album's photos
                 } else {
                     console.warn(`Album data or photos not found for key: ${albumKey}`);
