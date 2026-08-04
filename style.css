@@ -189,6 +189,13 @@ main {
     color: #352f36;
 }
 
+.info-profile-photo {
+    display: block;
+    width: 60%;
+    height: auto;
+    margin-bottom: 25px;
+}
+
 .info-content p {
     margin-bottom: 15px;
     font-size: 1.1em;
@@ -367,6 +374,10 @@ footer p {
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Adjust min size */
     }
 
+    .album-item img {
+        height: auto; /* Fill the column width so the thumb matches the title width */
+    }
+
     .photo-inspector-overlay {
         padding-top: 70px; /* Adjust padding if header height changes */
     }
@@ -406,7 +417,27 @@ footer p {
         font-size: 1.5em;
     }
 
+    .info-profile-photo {
+        width: 100%; /* Match the body text width on mobile */
+    }
+
     .info-content p {
         font-size: 1em;
+    }
+}
+
+/* --- Short (landscape phone) viewports: reclaim vertical chrome for the image --- */
+@media (max-height: 500px) {
+    .photo-inspector-overlay {
+        padding: 10px;
+    }
+
+    .inspector-content {
+        height: 100%; /* Don't reserve the desktop button allowance */
+    }
+
+    .inspector-navigation {
+        margin-top: 0;
+        padding-bottom: 0;
     }
 }
