@@ -32,6 +32,13 @@ This file consolidates the plan and conventions previously recorded in
 - No per-photo/per-album pages. Full-screen viewing happens in the "Photo
   Inspector" (`#photo-inspector`), a fixed overlay hidden by default, opened
   when an album thumbnail is clicked. Arrow Left/Right navigate, Escape closes.
+  The overlay appears instantly (no fade) and only once the first image has
+  loaded; on close, the image `src`/`srcset` are cleared so reopening never
+  flashes the previous album's photo.
+- Album card hover effect lives on the thumbnail only
+  (`.album-item:hover img` — slight lift + zoom); the title text does not move
+  or change. `.album-link:hover { opacity: 1; }` overrides the global
+  `a:hover { opacity: 0.7; }` fade so thumbnails never wash out.
 - Organization is tag-based, not folder-based: a photo's album membership and
   homepage presence live only in its `photoDB` entry in `script.js`.
 - Album `title` supports `\n` for line breaks.

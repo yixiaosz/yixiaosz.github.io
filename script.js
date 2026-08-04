@@ -118,9 +118,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentPhotoList = photoList;
         currentPhotoIndex = startIndex;
+        // Reveal the overlay only once the first image has loaded (or failed),
+        // so neither a stale frame nor an empty one is ever shown.
+        const reveal = () => {
+            photoInspector.classList.add('visible'); // Show the overlay
+            document.body.style.overflow = 'hidden'; // Prevent scrolling background
+        };
+        inspectorImage.addEventListener('load', reveal, { once: true });
+        inspectorImage.addEventListener('error', reveal, { once: true });
         updateInspectorImage();
-        photoInspector.classList.add('visible'); // Use class to show with transition
-        document.body.style.overflow = 'hidden'; // Prevent scrolling background
         // Add key listeners when inspector is open
         document.addEventListener('keydown', handleInspectorKeys);
     }
@@ -133,6 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.removeEventListener('keydown', handleInspectorKeys);
         currentPhotoList = []; // Clear the list
         currentPhotoIndex = 0;
+        // Clear the displayed image so reopening never flashes the previous photo
+        const picture = inspectorImage.closest('picture');
+        if (picture) {
+            picture.querySelectorAll('source').forEach(s => s.removeAttribute('srcset'));
+        }
+        inspectorImage.removeAttribute('src');
     }
 
     function updateInspectorImage() {

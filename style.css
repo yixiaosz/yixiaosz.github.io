@@ -146,11 +146,6 @@ main {
 
 .album-item {
     text-align: left;
-    transition: transform 0.2s ease-in-out;
-}
-
-.album-item:hover {
-    transform: translateY(-5px);
 }
 
 .album-item img {
@@ -159,6 +154,15 @@ main {
     object-fit: contain; 
     object-position: left bottom;
     margin-bottom: 10px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.album-item:hover img {
+    transform: translateY(-5px) scale(1.04); /* Lift + slight zoom on the thumbnail only; title stays put */
+}
+
+.album-link:hover {
+    opacity: 1; /* Override general link hover so thumbnails don't fade */
 }
 
 .album-item p {
@@ -309,15 +313,8 @@ footer p {
     color: #777;
 }
 
-/* Simple fade-in for inspector */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
 .photo-inspector-overlay.visible {
   display: flex;
-  animation: fadeIn 0.3s ease-in-out;
 }
 
 /* --- Responsive Design --- */
